@@ -1,3 +1,5 @@
+package com.DevLibrary.DevLibrary;
+
 public class BookResource extends Resource {
 
     private String author;
@@ -23,4 +25,4 @@ public class BookResource extends Resource {
     }
 }
 
-}
+

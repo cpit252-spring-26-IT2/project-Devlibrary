@@ -1,3 +1,5 @@
+package com.DevLibrary.DevLibrary;
+
 public abstract class Resource{
 
     private String id;

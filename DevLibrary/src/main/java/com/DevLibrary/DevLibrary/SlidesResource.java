@@ -1,4 +1,6 @@
-public class SlidesResource extends Resource
+package com.DevLibrary.DevLibrary;
+
+public class SlidesResource extends Resource{
 
 private int weekNumber;
 

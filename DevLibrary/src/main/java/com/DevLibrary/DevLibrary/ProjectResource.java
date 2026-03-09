@@ -1,10 +1,12 @@
+package com.DevLibrary.DevLibrary;
+
 public class ProjectResource extends Resource {
 
     private String projectLanguage;
     private String projectType;
 
     public ProjectResource(String id, String title, String courseName, String description, String link, String uploadedBy, String projectLanguage) {
-        {
+
             super(id, title, courseName, description, link, uploadedBy);
             this.projectLanguage = projectLanguage;
             this.projectType = projectType;

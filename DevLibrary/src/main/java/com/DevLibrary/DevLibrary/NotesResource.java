@@ -1,3 +1,6 @@
+package com.DevLibrary.DevLibrary;
+
+
 public class NotesResource extends Resource {
 
     private String noteType;
@@ -23,5 +26,4 @@ public class NotesResource extends Resource {
     public String getResourceType() {
         return "Notes";
     }
-}
 }
