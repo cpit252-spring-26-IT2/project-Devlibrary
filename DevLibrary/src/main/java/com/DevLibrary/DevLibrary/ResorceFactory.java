@@ -3,6 +3,7 @@ package com.DevLibrary.DevLibrary;
 public class ResorceFactory {
 
 
+
     public static Resource generateResource(String type){
         switch (type){
             case "slide":
