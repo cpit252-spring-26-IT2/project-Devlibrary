@@ -1,7 +1,12 @@
+package com.DevLibrary.DevLibrary;
+
 public class BookResource extends Resource {
 
     private String author;
 
+    public BookResource(){
+
+    }
     //here we can add a buiilder or another design pattren to enhans it but this is a first writing.
     public BookResource(String id, String title, String courseName, String description, String link, String uploadedBy, String author){
          super(id,title,courseName,description,link,uploadedBy);
@@ -23,4 +28,4 @@ public class BookResource extends Resource {
     }
 }
 
-}
+

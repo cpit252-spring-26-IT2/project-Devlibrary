@@ -1,8 +1,11 @@
+package com.DevLibrary.DevLibrary;
+
 public class NotesResource extends Resource {
 
     private String noteType;
 
-
+    public NotesResource(){
+    }
     //we can add design pattrens here
     public NotesResource(String id, String title, String courseName, String description, String link, String uploadedBy, String noteType) {
         super(id, title, courseName, description, link, uploadedBy);
@@ -23,5 +26,4 @@ public class NotesResource extends Resource {
     public String getResourceType() {
         return "Notes";
     }
-}
 }

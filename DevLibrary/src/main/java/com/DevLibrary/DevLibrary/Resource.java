@@ -1,3 +1,6 @@
+
+package com.DevLibrary.DevLibrary;
+
 public abstract class Resource{
 
     private String id;
@@ -6,6 +9,9 @@ public abstract class Resource{
     private String description;
     private String link;
     private String uploadedBy;
+
+    public Resource() {
+    }
 
     public Resource(String id, String title, String courseName,String description,String link, String uploadedBy){
         this.id = id;
