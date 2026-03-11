@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class demo {
 	public static void main(String[] args) {
 
+
+        //here we used the factory method (ResourceFactory) and made resource1 then set the values
+        //using set method that add the value to the factory method object we made.
         Resource resource1 =ResorceFactory.generateResource("book");
         resource1.setId("B1");
         resource1.setTitle("java basics");
@@ -15,6 +18,8 @@ public class demo {
         resource1.setLink("https://example.com/java-book");
         resource1.setUploadedBy("Azzam");
         ((BookResource)resource1).setAuthor("John Smith");
+
+        //same as the one before
 
         Resource resource2 =ResorceFactory.generateResource("slide");
         resource2.setId("S1");
