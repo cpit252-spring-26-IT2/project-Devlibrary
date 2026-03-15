@@ -1,6 +1,6 @@
 package com.DevLibrary.DevLibrary;
 
-public class ResorceFactory {
+public class ResourceFactory {
 
 
 

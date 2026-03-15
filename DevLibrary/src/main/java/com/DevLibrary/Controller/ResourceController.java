@@ -28,7 +28,7 @@ public class ResourceController {
     //ADD
     @PostMapping("/add")
     public Resource addResource(@RequestBody ResourceRequest request){
-        Resource resource = ResorceFactory.generateResource(request.getResourceType());
+        Resource resource = ResourceFactory.generateResource(request.getResourceType());
         //copy the values from postman and paste it in resource
         resource.setId(request.getId());
         resource.setTitle(request.getTitle());
@@ -46,7 +46,6 @@ public class ResourceController {
             ((NotesResource)resource).setNoteType(request.getNoteType());
         }else if(resource instanceof ProjectResource){
             ((ProjectResource)resource).setProjectLanguage(request.getProjectLanguage());
-        }else if(resource instanceof ProjectResource){
             ((ProjectResource)resource).setProjectType(request.getProjectType());
         }
 

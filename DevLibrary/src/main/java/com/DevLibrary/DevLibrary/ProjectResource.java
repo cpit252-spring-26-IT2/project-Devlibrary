@@ -7,7 +7,7 @@ public class ProjectResource extends Resource {
 
     public ProjectResource() {
     }
-    public ProjectResource(String id, String title, String courseName, String description, String link, String uploadedBy, String projectLanguage) {
+    public ProjectResource(String id, String title, String courseName, String description, String link, String uploadedBy, String projectLanguage, String projectType) {
 
         super(id, title, courseName, description, link, uploadedBy);
         this.projectLanguage = projectLanguage;

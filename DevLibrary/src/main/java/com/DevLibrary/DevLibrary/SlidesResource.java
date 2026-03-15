@@ -2,18 +2,18 @@ package com.DevLibrary.DevLibrary;
 
 public class SlidesResource extends Resource{
 
-    private int weekNumber;
+    private Integer weekNumber;
 
     public SlidesResource() {
     }
     //we can add design pattrens here
-    public SlidesResource(String id, String title, String courseName, String description, String link, String uploadedBy, int weekNumber) {
+    public SlidesResource(String id, String title, String courseName, String description, String link, String uploadedBy, Integer weekNumber) {
         super(id, title, courseName, description, link, uploadedBy);
         this.weekNumber = weekNumber;
     }
 
 
-    public int getWeekNumber() {
+    public Integer getWeekNumber() {
         return weekNumber;
     }
 
