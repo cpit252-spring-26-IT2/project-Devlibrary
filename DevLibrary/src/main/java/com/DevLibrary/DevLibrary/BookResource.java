@@ -2,16 +2,17 @@ package com.DevLibrary.DevLibrary;
 
 public class BookResource extends Resource {
 
-    private String author;
+    private String author; // optional for books only
+
 
     public BookResource(){
 
     }
-    //here we can add a buiilder or another design pattren to enhans it but this is a first writing.
-    public BookResource(String id, String title, String courseName, String description, String link, String uploadedBy, String author){
-         super(id,title,courseName,description,link,uploadedBy);
-        this.author =author;
-}
+
+    private BookResource(Builder builder) {
+        super(builder);
+        this.author = builder.author;
+    }
 
     public String getAuthor() {
         return author;
@@ -25,6 +26,30 @@ public class BookResource extends Resource {
     @Override
     public String getResourceType() {
         return "Book";
+    }
+
+    public static class Builder extends Resource.Builder<Builder> {
+        private String author;
+
+        public Builder(String title, String courseName, String link) {
+            super(title, courseName, link);
+        }
+
+        public Builder author(String author) {
+            this.author = author;
+            return this;
+        }
+
+        public BookResource build() {
+            return new BookResource(this);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+            //allow for recursive generics.
+            //to allow the resource to take this optionale special attributes from whatever class is having it.
+        }
     }
 }
 

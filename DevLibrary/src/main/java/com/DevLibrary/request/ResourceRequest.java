@@ -85,7 +85,7 @@ public class ResourceRequest {
         this.noteType = noteType;
     }
 
-    public void setWeekNumber(int weekNumber) {
+    public void setWeekNumber(Integer weekNumber) {
         this.weekNumber = weekNumber;
     }
 

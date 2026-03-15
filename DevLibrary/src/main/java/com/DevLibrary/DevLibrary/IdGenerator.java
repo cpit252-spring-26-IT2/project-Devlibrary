@@ -17,17 +17,17 @@ public class IdGenerator {
             return "B-" + bookCounter;
         }
 
-        if(type.equalsIgnoreCase("slide")){
+        if(type.equalsIgnoreCase("slide") || type.equalsIgnoreCase("slides")){
             slideCounter++;
             return "S-" + slideCounter;
         }
 
-        if(type.equalsIgnoreCase("note")){
+        if(type.equalsIgnoreCase("note") || type.equalsIgnoreCase("notes")){
             noteCounter++;
             return "N-" + noteCounter;
         }
 
-        if(type.equalsIgnoreCase("project")){
+        if(type.equalsIgnoreCase("project")|| type.equalsIgnoreCase("projects")){
             projectCounter++;
             return "P-" + projectCounter;
         }

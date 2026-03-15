@@ -2,18 +2,17 @@ package com.DevLibrary.DevLibrary;
 
 public class ProjectResource extends Resource {
 
-    private String projectLanguage;
-    private String projectType;
+    private String projectLanguage;// optional
+    private String projectType;// optional
 
     public ProjectResource() {
     }
-    public ProjectResource(String id, String title, String courseName, String description, String link, String uploadedBy, String projectLanguage, String projectType) {
-
-        super(id, title, courseName, description, link, uploadedBy);
-        this.projectLanguage = projectLanguage;
-        this.projectType = projectType;
+    //builder
+    private ProjectResource(Builder builder) {
+        super(builder);
+        this.projectLanguage = builder.projectLanguage;
+        this.projectType = builder.projectType;
     }
-
 
     public String getProjectLanguage () {
         return projectLanguage;
@@ -38,4 +37,33 @@ public class ProjectResource extends Resource {
         return "Project";
     }
 
+    public static class Builder extends Resource.Builder<Builder> {
+        private String projectLanguage;
+        private String projectType;
+
+        public Builder(String title, String courseName, String link) {
+            super(title, courseName, link);
+        }
+
+        public Builder projectLanguage(String projectLanguage) {
+            this.projectLanguage = projectLanguage;
+            return this;
+        }
+
+        public Builder projectType(String projectType) {
+            this.projectType = projectType;
+            return this;
+        }
+
+        public ProjectResource build() {
+            return new ProjectResource(this);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+            //allow for recursive generics.
+            //to allow the resource to take this optionale special attributes from whatever class is having it.
+        }
+    }
 }
