@@ -3,11 +3,10 @@ package com.DevLibrary.DevLibrary;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-public class demo {
-	public static void main(String[] args) {
-
-
+@SpringBootApplication(scanBasePackages = "com.DevLibrary")public class DevLibraryApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(DevLibraryApplication.class, args);
+/*
         //here we used the factory method (ResourceFactory) and made resource1 then set the values
         //using set method that add the value to the factory method object we made.
         Resource resource1 =ResorceFactory.generateResource("book");
@@ -34,6 +33,8 @@ public class demo {
 
 		System.out.println(resource1);
 		System.out.println(resource2);
+		*/
+
 	}
 }
 
