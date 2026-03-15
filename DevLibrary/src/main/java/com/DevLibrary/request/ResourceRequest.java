@@ -3,14 +3,12 @@ package com.DevLibrary.request;
 // the use of this class is going to be getting data from user when use post request
 public class ResourceRequest {
     private String resourceType;
-    private String id;
     private String title;
     private String courseName;
     private String description;
     private String link;
-    private String uploadedBy;
     private String author;
-    private int weekNumber;
+    private Integer weekNumber;
     private String noteType;
     private String projectLanguage;
     private String projectType;
@@ -21,10 +19,6 @@ public class ResourceRequest {
 
     public String getResourceType() {
         return resourceType;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getTitle() {
@@ -39,10 +33,6 @@ public class ResourceRequest {
         return description;
     }
 
-    public String getUploadedBy() {
-        return uploadedBy;
-    }
-
     public String getLink() {
         return link;
     }
@@ -55,7 +45,7 @@ public class ResourceRequest {
         return noteType;
     }
 
-    public int getWeekNumber() {
+    public Integer getWeekNumber() {
         return weekNumber;
     }
 
@@ -65,10 +55,6 @@ public class ResourceRequest {
 
     public String getProjectType() {
         return projectType;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setResourceType(String resourceType) {
@@ -93,10 +79,6 @@ public class ResourceRequest {
 
     public void setAuthor(String author) {
         this.author = author;
-    }
-
-    public void setUploadedBy(String uploadedBy) {
-        this.uploadedBy = uploadedBy;
     }
 
     public void setNoteType(String noteType) {
