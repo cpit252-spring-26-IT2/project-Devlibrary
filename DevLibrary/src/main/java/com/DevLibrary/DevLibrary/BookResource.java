@@ -1,5 +1,7 @@
 package com.DevLibrary.DevLibrary;
 
+import com.DevLibrary.resourceRefrence.ResourceReference;
+
 public class BookResource extends Resource {
 
     private String author; // optional for books only
@@ -31,8 +33,8 @@ public class BookResource extends Resource {
     public static class Builder extends Resource.Builder<Builder> {
         private String author;
 
-        public Builder(String title, String courseName, String link) {
-            super(title, courseName, link);
+        public Builder(String title, String courseName, ResourceReference reference) {
+            super(title, courseName, reference);
         }
 
         public Builder author(String author) {

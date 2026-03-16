@@ -1,6 +1,8 @@
 package com.DevLibrary.DevLibrary;
 
 import com.DevLibrary.request.ResourceRequest;
+import com.DevLibrary.resourceRefrence.ReferenceFactory;
+import com.DevLibrary.resourceRefrence.ResourceReference;
 
 /*
  Factory Pattern
@@ -19,6 +21,12 @@ public class ResourceFactory {
 
     public static Resource buildResource(ResourceRequest request) {
 
+        ResourceReference reference = ReferenceFactory.createReference(
+                request.getUrl(),
+                request.getFileName(),
+                request.getFileType(),
+                request.getFilePath()
+        );
         Resource resource;
 
         switch (request.getResourceType().toLowerCase()) {
@@ -27,7 +35,7 @@ public class ResourceFactory {
                 BookResource.Builder bookBuilder = new BookResource.Builder(
                         request.getTitle(),
                         request.getCourseName(),
-                        request.getLink()
+                        reference
                 );
 
                 // if description is not empty get description
@@ -49,7 +57,7 @@ public class ResourceFactory {
                 SlidesResource.Builder slidesBuilder = new SlidesResource.Builder(
                         request.getTitle(),
                         request.getCourseName(),
-                        request.getLink()
+                        reference
                 );
 
                 // if description is not empty get description
@@ -71,7 +79,7 @@ public class ResourceFactory {
                 NotesResource.Builder notesBuilder = new NotesResource.Builder(
                         request.getTitle(),
                         request.getCourseName(),
-                        request.getLink()
+                        reference
                 );
 
                 // if description is not empty get description
@@ -92,7 +100,7 @@ public class ResourceFactory {
                 ProjectResource.Builder projectBuilder = new ProjectResource.Builder(
                         request.getTitle(),
                         request.getCourseName(),
-                        request.getLink()
+                        reference
                 );
 
                 // if description is not empty get description

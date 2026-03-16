@@ -2,6 +2,8 @@ package com.DevLibrary.Controller;
 
 import com.DevLibrary.DevLibrary.*;
 import com.DevLibrary.request.ResourceRequest;
+import com.DevLibrary.resourceRefrence.FileReference;
+import com.DevLibrary.resourceRefrence.LinkReference;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,7 +40,7 @@ public class ResourceController {
         BookResource book1 = new BookResource.Builder(
                 "java basics '2' ",
                 "CPIT-252",
-                "https://example.com/java-book2"
+                new FileReference("java-book2.pdf", "pdf", "/sample/java-book2.pdf")
         )
                 .description("A helpful Java book for beginners 2")
                 .author("John Smith")
@@ -50,7 +52,7 @@ public class ResourceController {
         BookResource book2 = new BookResource.Builder(
                 "java basics",
                 "CPIT-251",
-                "https://example.com/java-book"
+                new LinkReference("https://example.com/java-book")
         )
                 .description("A helpful Java book for beginners")
                 .author("John Smith")
@@ -68,26 +70,7 @@ public class ResourceController {
         return resourcesList;
     }
 
-    @GetMapping("/test-add-book-minimal")
-    public Resource testAddBookMinimal() {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        ResourceRequest request = new ResourceRequest();
-        request.setResourceType("book");
-        request.setTitle("Minimal Book");
-        request.setCourseName("CPIT-252");
-        request.setLink("https://example.com/minimal-book");
-
-        Resource resource = ResourceFactory.buildResource(request);
-
-        resource.setId(idGenerator.generateId(request.getResourceType()));
-        resource.setUploadedBy(username);
-
-        resourcesList.add(resource);
-        return resource;
-    }
     @GetMapping("/test-add")
     public Resource testAddResource() {
 
@@ -98,18 +81,19 @@ public class ResourceController {
         request.setResourceType("book");
         request.setTitle("Test Book");
         request.setCourseName("CPIT-252");
-        request.setLink("https://example.com/test");
         request.setDescription("Test description");
         request.setAuthor("Test Author");
 
-        // use factory + builder
+        request.setFileName("test-book.pdf");
+        request.setFileType("pdf");
+        request.setFilePath("/uploads/test-book.pdf");
+        //use factory + builder
         Resource resource = ResourceFactory.buildResource(request);
 
         resource.setId(idGenerator.generateId(request.getResourceType()));
         resource.setUploadedBy(username);
 
         resourcesList.add(resource);
-
         return resource;
     }
 

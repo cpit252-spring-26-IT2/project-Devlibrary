@@ -1,5 +1,7 @@
 package com.DevLibrary.DevLibrary;
 
+import com.DevLibrary.resourceRefrence.ResourceReference;
+
 public class ProjectResource extends Resource {
 
     private String projectLanguage;// optional
@@ -41,8 +43,8 @@ public class ProjectResource extends Resource {
         private String projectLanguage;
         private String projectType;
 
-        public Builder(String title, String courseName, String link) {
-            super(title, courseName, link);
+        public Builder(String title, String courseName, ResourceReference reference) {
+            super(title, courseName, reference);
         }
 
         public Builder projectLanguage(String projectLanguage) {

@@ -1,5 +1,6 @@
 
 package com.DevLibrary.DevLibrary;
+import com.DevLibrary.resourceRefrence.ResourceReference;
 
 public abstract class Resource{
 
@@ -7,7 +8,7 @@ public abstract class Resource{
     private String title;
     private String courseName;
     private String description;
-    private String link;
+    private ResourceReference reference;
     private String uploadedBy;
 
     /*
@@ -27,7 +28,7 @@ public abstract class Resource{
     protected Resource(Builder<?> builder) {
         this.title = builder.title;
         this.courseName = builder.courseName;
-        this.link = builder.link;
+        this.reference = builder.reference;
         this.description = builder.description;
     }
 
@@ -63,12 +64,12 @@ public abstract class Resource{
         this.description = description;
     }
 
-    public String getLink() {
-        return link;
+    public ResourceReference getReference() {
+        return reference;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setReference(ResourceReference reference) {
+        this.reference = reference;
     }
 
     public String getUploadedBy() {
@@ -87,7 +88,7 @@ public abstract class Resource{
                 ", title='" + title + '\'' +
                 ", courseName='" + courseName + '\'' +
                 ", description='" + description + '\'' +
-                ", link='" + link + '\'' +
+                ", reference='" + reference + '\'' +
                 ", uploadedBy='" + uploadedBy + '\'' +
                 ", resourceType='" + getResourceType() + '\'' +
                 '}';
@@ -95,13 +96,13 @@ public abstract class Resource{
     public static abstract class Builder<T extends Builder<T>> {
         private final String title;
         private final String courseName;
-        private final String link;
+        private final ResourceReference reference;
         private String description;
 
-        public Builder(String title, String courseName, String link) {
+        public Builder(String title, String courseName, ResourceReference reference) {
             this.title = title;
             this.courseName = courseName;
-            this.link = link;
+            this.reference = reference;
         }
 
         public T description(String description) {

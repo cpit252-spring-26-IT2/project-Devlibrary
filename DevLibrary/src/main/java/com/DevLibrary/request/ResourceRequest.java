@@ -6,7 +6,12 @@ public class ResourceRequest {
     private String title;
     private String courseName;
     private String description;
-    private String link;
+
+    private String url;
+    private String fileName;
+    private String fileType;
+    private String filePath;
+
     private String author;
     private Integer weekNumber;
     private String noteType;
@@ -33,8 +38,20 @@ public class ResourceRequest {
         return description;
     }
 
-    public String getLink() {
-        return link;
+    public String getUrl() {
+        return url;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public String getFilePath() {
+        return filePath;
     }
 
     public String getAuthor() {
@@ -69,8 +86,20 @@ public class ResourceRequest {
         this.courseName = courseName;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public void setDescription(String description) {

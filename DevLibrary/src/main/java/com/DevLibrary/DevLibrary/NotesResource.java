@@ -1,5 +1,7 @@
 package com.DevLibrary.DevLibrary;
 
+import com.DevLibrary.resourceRefrence.ResourceReference;
+
 public class NotesResource extends Resource {
 
     private String noteType; // optional
@@ -28,8 +30,8 @@ public class NotesResource extends Resource {
     public static class Builder extends Resource.Builder<Builder> {
         private String noteType;
 
-        public Builder(String title, String courseName, String link) {
-            super(title, courseName, link);
+        public Builder(String title, String courseName, ResourceReference reference) {
+            super(title, courseName,  reference);
         }
 
         public Builder noteType(String noteType) {

@@ -1,5 +1,7 @@
 package com.DevLibrary.DevLibrary;
 
+import com.DevLibrary.resourceRefrence.ResourceReference;
+
 public class SlidesResource extends Resource{
 
     private Integer weekNumber; // optional
@@ -29,8 +31,8 @@ public class SlidesResource extends Resource{
     public static class Builder extends Resource.Builder<Builder> {
         private Integer weekNumber;
 
-        public Builder(String title, String courseName, String link) {
-            super(title, courseName, link);
+        public Builder(String title, String courseName, ResourceReference reference) {
+            super(title, courseName, reference);
         }
 
         public Builder weekNumber(Integer weekNumber) {
