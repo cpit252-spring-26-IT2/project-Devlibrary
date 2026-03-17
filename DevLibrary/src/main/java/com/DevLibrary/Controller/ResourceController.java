@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -113,6 +114,18 @@ public class ResourceController {
 
         resourcesList.add(resource);
         return resource;
+    }
+    @DeleteMapping("/delete/{id}")
+    public Resource deleteResource(@PathVariable("id") String  courseId){
+        Iterator<Resource> it=resourcesList.iterator();
+        while (it.hasNext()){
+            Resource res=it.next();
+            if (res.getId().equals(courseId)){
+                it.remove();
+                return res;
+            }
+        }
+        return null;
     }
 
 

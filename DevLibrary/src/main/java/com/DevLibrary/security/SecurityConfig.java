@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
+                .httpBasic(Customizer.withDefaults())
                 .formLogin(form -> form
                         .defaultSuccessUrl("/home", true)
                 )
