@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "resources")
-public class Resource {
+public class ResourceEntity {
     @Id
     private String id;
 
@@ -17,7 +17,7 @@ public class Resource {
     private String resourceType;
 
 
-    public Resource() {
+    public ResourceEntity() {
     }
 
     // getters  setters

@@ -1,9 +1,13 @@
 package com.DevLibrary.Controller;
 
 import com.DevLibrary.DevLibrary.*;
+import com.DevLibrary.Entity.ResourceEntity;
+import com.DevLibrary.exception.ResourceNotFoundException;
+import com.DevLibrary.repository.ResourceRepository;
 import com.DevLibrary.request.ResourceRequest;
 import com.DevLibrary.resourceRefrence.FileReference;
 import com.DevLibrary.resourceRefrence.LinkReference;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,117 +20,106 @@ import java.util.List;
 @RequestMapping("/api")
 public class ResourceController {
 
+    private final ResourceRepository resourceRepository;
     private final IdGenerator idGenerator;
     //temprary untill using database
-    private final List<Resource> resourcesList=new ArrayList<>();
+    //private final List<Resource> resourcesList=new ArrayList<>();
 
-    public ResourceController(IdGenerator idGenerator) {
+    public ResourceController(IdGenerator idGenerator, ResourceRepository resourceRepository) {
         this.idGenerator = idGenerator;
-        loadSampleData();
+        this.resourceRepository = resourceRepository;
     }
+
+        @GetMapping("/resources")
+        public List<ResourceEntity> getResourcesList () {
+            return resourceRepository.findAll();
+        }
+
     //For test GetMapping which will do reviewing Data
-    private void loadSampleData() {
-    /*
-     Temporary sample data for testing only.
-     The uploadedBy value here is hardcoded because these resources are created
-     automatically when the application starts, not by a logged-in user.
+        @GetMapping("/test-add")
+        public ResourceEntity testAddResource () {
 
-     Later, when using a database or real user actions, uploadedBy should come
-     from the authenticated account through Spring Security.
-    */
-        if (!resourcesList.isEmpty()) {
-            return;
-        }
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
 
-        BookResource book1 = new BookResource.Builder(
-                "java basics '2' ",
-                "CPIT-252",
-                new FileReference("java-book2.pdf", "pdf", "/sample/java-book2.pdf")
-        )
-                .description("A helpful Java book for beginners 2")
-                .author("John Smith")
-                .build();
+            ResourceRequest request = new ResourceRequest();
+            request.setResourceType("book");
+            request.setTitle("Test Book");
+            request.setCourseName("CPIT-252");
+            request.setDescription("Test description");
+            request.setAuthor("Test Author");
 
-        book1.setId(idGenerator.generateId("book"));
-        book1.setUploadedBy("sample-user");
+            request.setFileName("test-book.pdf");
+            request.setFileType("pdf");
+            request.setFilePath("/uploads/test-book.pdf");
+            //use factory + builder
+            Resource resource = ResourceFactory.buildResource(request);
 
-        BookResource book2 = new BookResource.Builder(
-                "java basics",
-                "CPIT-251",
-                new LinkReference("https://example.com/java-book")
-        )
-                .description("A helpful Java book for beginners")
-                .author("John Smith")
-                .build();
-
-        book2.setId(idGenerator.generateId("book"));
-        book2.setUploadedBy("sample-user");
-
-        resourcesList.add(book1);
-        resourcesList.add(book2);
-    }
-
-    @GetMapping("/resources")
-    public List<Resource> getResourcesList(){
-        return resourcesList;
-    }
+            resource.setId(idGenerator.generateId(request.getResourceType()));
+            resource.setUploadedBy(username);
 
 
-    @GetMapping("/test-add")
-    public Resource testAddResource() {
+            ResourceEntity entity = new ResourceEntity();
+            entity.setId(resource.getId());
+            entity.setTitle(resource.getTitle());
+            entity.setCourseName(resource.getCourseName());
+            entity.setDescription(resource.getDescription());
+            entity.setUploadedBy(resource.getUploadedBy());
+            entity.setResourceType(request.getResourceType());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        ResourceRequest request = new ResourceRequest();
-        request.setResourceType("book");
-        request.setTitle("Test Book");
-        request.setCourseName("CPIT-252");
-        request.setDescription("Test description");
-        request.setAuthor("Test Author");
-
-        request.setFileName("test-book.pdf");
-        request.setFileType("pdf");
-        request.setFilePath("/uploads/test-book.pdf");
-        //use factory + builder
-        Resource resource = ResourceFactory.buildResource(request);
-
-        resource.setId(idGenerator.generateId(request.getResourceType()));
-        resource.setUploadedBy(username);
-
-        resourcesList.add(resource);
-        return resource;
-    }
-
-    //ADD
-    @PostMapping("/add")
-    public Resource addResource(@RequestBody ResourceRequest request) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        // Factory + Builder
-        Resource resource = ResourceFactory.buildResource(request);
-
-        // auto id and username.
-        resource.setId(idGenerator.generateId(request.getResourceType()));
-        resource.setUploadedBy(username);
-
-        resourcesList.add(resource);
-        return resource;
-    }
-    @DeleteMapping("/delete/{id}")
-    public Resource deleteResource(@PathVariable("id") String  courseId){
-        Iterator<Resource> it=resourcesList.iterator();
-        while (it.hasNext()){
-            Resource res=it.next();
-            if (res.getId().equals(courseId)){
-                it.remove();
-                return res;
+            if (resource.getReference() != null) {
+                entity.setReference(resource.getReference().toString());
             }
+
+            resourceRepository.save(entity);
+            return entity;
         }
-        return null;
+
+        //ADD
+        @PostMapping("/add")
+        public ResourceEntity addResource (@RequestBody ResourceRequest request){
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+
+            // Factory + Builder
+            Resource resource = ResourceFactory.buildResource(request);
+
+            // auto id and username.
+            resource.setId(idGenerator.generateId(request.getResourceType()));
+            resource.setUploadedBy(username);
+
+            ResourceEntity entity = new ResourceEntity();
+            entity.setId(resource.getId());
+            entity.setTitle(resource.getTitle());
+            entity.setCourseName(resource.getCourseName());
+            entity.setDescription(resource.getDescription());
+            entity.setUploadedBy(resource.getUploadedBy());
+            entity.setResourceType(request.getResourceType());
+
+            if (resource.getReference() != null) {
+                entity.setReference(resource.getReference().toString());
+            }
+
+            resourceRepository.save(entity);
+            return entity;
+        }
+        @DeleteMapping("/delete/{id}")
+        public ResponseEntity<Void> deleteResource (@PathVariable("id") String id){
+
+            ResourceEntity resource = resourceRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
+
+            resourceRepository.delete(resource);
+
+            return ResponseEntity.ok().build();
+        }
     }
 
 
-}
+
+
+
+
+
+
