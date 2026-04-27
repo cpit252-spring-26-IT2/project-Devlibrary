@@ -7,6 +7,7 @@ import com.DevLibrary.repository.ResourceRepository;
 import com.DevLibrary.request.ResourceRequest;
 import com.DevLibrary.resourceFacade.ResourceFacade;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,9 +37,15 @@ public class ResourceController {
         facade.deleteResource(id);
         return ResponseEntity.ok().build();
         }
-        //@GetMapping("/resources/{id}") Later
+        @GetMapping("/resources/{id}")
+        public ResourceEntity getResource (@PathVariable("id") String id){
+        return facade.getResource(id);
+        }
 
-        //@PutMapping("/update/{id}")   Later
+        @PutMapping("/update/{id}")
+        public ResourceEntity updateResource(@PathVariable String id, @RequestBody ResourceEntity updatedResource) {
+            return facade.updateResource(id,updatedResource);
+        }
 
 
 

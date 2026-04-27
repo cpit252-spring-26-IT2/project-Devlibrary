@@ -55,4 +55,25 @@ public class ResourceFacade {
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
         repository.delete(resource);
     }
+    public ResourceEntity getResource(String id) {
+        //search by id using jpa commands findById() and then get it if the resource doesn`t exist throw Exception
+        ResourceEntity resource = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
+
+        return resource;
+    }
+    public ResourceEntity updateResource(String id, ResourceEntity Request) {
+        //search by id using jpa commands findById() and then get it and update it if the resource doesn`t exist throw Exception
+        ResourceEntity updateresource = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
+        updateresource.setId(Request.getId());
+        updateresource.setTitle(Request.getTitle());
+        updateresource.setCourseName(Request.getCourseName());
+        updateresource.setDescription(Request.getDescription());
+        updateresource.setUploadedBy(Request.getUploadedBy());
+        updateresource.setResourceType(Request.getResourceType());
+
+
+        return repository.save(updateresource);
+    }
 }
