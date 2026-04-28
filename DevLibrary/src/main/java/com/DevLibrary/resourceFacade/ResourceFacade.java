@@ -66,12 +66,18 @@ public class ResourceFacade {
         //search by id using jpa commands findById() and then get it and update it if the resource doesn`t exist throw Exception
         ResourceEntity updateresource = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
-        updateresource.setId(Request.getId());
-        updateresource.setTitle(Request.getTitle());
-        updateresource.setCourseName(Request.getCourseName());
-        updateresource.setDescription(Request.getDescription());
-        updateresource.setUploadedBy(Request.getUploadedBy());
-        updateresource.setResourceType(Request.getResourceType());
+        if (Request.getTitle() != null) {
+            updateresource.setTitle(Request.getTitle());
+        }
+        if (Request.getCourseName() != null) {
+            updateresource.setCourseName(Request.getCourseName());
+        }
+        if (Request.getDescription() != null) {
+            updateresource.setDescription(Request.getDescription());
+        }
+        if (Request.getResourceType() != null) {
+            updateresource.setResourceType(Request.getResourceType());
+        }
 
 
         return repository.save(updateresource);
