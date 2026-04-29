@@ -8,8 +8,11 @@ error and see an explan of it.
 
 ## Features
 - Add and organize resources such as slides, books
+
 - Browse organized resources by course and type
+
 -Programming Error Helper and it will Search error by name and will Show explanation, causes, and fix
+
 -Tool Guide  it will Search tool by name and will show Description ,Usage and Example
 
 ## Usage
