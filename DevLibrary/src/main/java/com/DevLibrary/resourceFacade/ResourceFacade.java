@@ -1,8 +1,6 @@
 package com.DevLibrary.resourceFacade;
 
-import com.DevLibrary.DevLibrary.IdGenerator;
-import com.DevLibrary.DevLibrary.Resource;
-import com.DevLibrary.DevLibrary.ResourceFactory;
+import com.DevLibrary.DevLibrary.*;
 import com.DevLibrary.Entity.ResourceEntity;
 import com.DevLibrary.exception.ResourceNotFoundException;
 import com.DevLibrary.repository.ResourceRepository;
@@ -25,6 +23,8 @@ public class ResourceFacade {
     public List<ResourceEntity> getResources() {
         return repository.findAll();
     }
+
+    //add
     public ResourceEntity  addResource(ResourceRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -47,14 +47,41 @@ public class ResourceFacade {
         if (resource.getReference() != null) {
             entity.setReference(resource.getReference().toString());
         }
+
+        fillSpecialFields(entity, resource);
+
         return repository.save(entity);
     }
+
+    //see what the type of the resource if it was one of the below it will add it's values to entity
+    //if was bookResource then it is book, take the auther and put it inside the entity
+    private void fillSpecialFields(ResourceEntity entity, Resource resource) {
+        if (resource instanceof BookResource book) {
+            entity.setAuthor(book.getAuthor());
+        }
+
+        if (resource instanceof SlidesResource slides) {
+            entity.setWeekNumber(slides.getWeekNumber());
+        }
+
+        if (resource instanceof NotesResource notes) {
+            entity.setNoteType(notes.getNoteType());
+        }
+
+        if (resource instanceof ProjectResource project) {
+            entity.setProjectLanguage(project.getProjectLanguage());
+            entity.setProjectType(project.getProjectType());
+        }
+    }
+
+    //delete
     public void deleteResource(String id) {
         //search by id using jpa commands findById() and then delete() if the resource doesn`t exist throw Exception
         ResourceEntity resource = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
         repository.delete(resource);
     }
+    //get
     public ResourceEntity getResource(String id) {
         //search by id using jpa commands findById() and then get it if the resource doesn`t exist throw Exception
         ResourceEntity resource = repository.findById(id)
@@ -62,23 +89,62 @@ public class ResourceFacade {
 
         return resource;
     }
-    public ResourceEntity updateResource(String id, ResourceEntity Request) {
-        //search by id using jpa commands findById() and then get it and update it if the resource doesn`t exist throw Exception
+    //update
+    public ResourceEntity updateResource(String id, ResourceRequest request) {
+        // Search by id using JPA findById().
+        // If the resource does not exist, throw ResourceNotFoundException.
         ResourceEntity updateresource = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
-        if (Request.getTitle() != null) {
-            updateresource.setTitle(Request.getTitle());
-        }
-        if (Request.getCourseName() != null) {
-            updateresource.setCourseName(Request.getCourseName());
-        }
-        if (Request.getDescription() != null) {
-            updateresource.setDescription(Request.getDescription());
-        }
-        if (Request.getResourceType() != null) {
-            updateresource.setResourceType(Request.getResourceType());
+
+        // Update common fields
+        if (request.getTitle() != null) {
+            updateresource.setTitle(request.getTitle());
         }
 
+        if (request.getCourseName() != null) {
+            updateresource.setCourseName(request.getCourseName());
+        }
+
+        if (request.getDescription() != null) {
+            updateresource.setDescription(request.getDescription());
+        }
+
+        if (request.getResourceType() != null) {
+            updateresource.setResourceType(request.getResourceType());
+        }
+
+        // Update reference field
+        if (request.getUrl() != null && !request.getUrl().isBlank()) {
+            updateresource.setReference(request.getUrl());
+        } else if (request.getFileName() != null && !request.getFileName().isBlank()
+                && request.getFileType() != null && !request.getFileType().isBlank()
+                && request.getFilePath() != null && !request.getFilePath().isBlank()) {
+
+            updateresource.setReference(
+                    request.getFileName() + " | " + request.getFileType() + " | " + request.getFilePath()
+            );
+        }
+
+        // Update type-specific optional fields
+        if (request.getAuthor() != null) {
+            updateresource.setAuthor(request.getAuthor());
+        }
+
+        if (request.getWeekNumber() != null) {
+            updateresource.setWeekNumber(request.getWeekNumber());
+        }
+
+        if (request.getNoteType() != null) {
+            updateresource.setNoteType(request.getNoteType());
+        }
+
+        if (request.getProjectLanguage() != null) {
+            updateresource.setProjectLanguage(request.getProjectLanguage());
+        }
+
+        if (request.getProjectType() != null) {
+            updateresource.setProjectType(request.getProjectType());
+        }
 
         return repository.save(updateresource);
     }

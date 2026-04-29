@@ -2,6 +2,7 @@ package com.DevLibrary.Controller;
 
 import com.DevLibrary.DevLibrary.*;
 import com.DevLibrary.Entity.ResourceEntity;
+import com.DevLibrary.request.ResourceRequest;
 import com.DevLibrary.exception.ResourceNotFoundException;
 import com.DevLibrary.repository.ResourceRepository;
 import com.DevLibrary.request.ResourceRequest;
@@ -43,8 +44,8 @@ public class ResourceController {
         }
 
         @PutMapping("/update/{id}")
-        public ResourceEntity updateResource(@PathVariable String id, @RequestBody ResourceEntity updatedResource) {
-            return facade.updateResource(id,updatedResource);
+        public ResourceEntity updateResource(@PathVariable String id, @RequestBody ResourceRequest updatedResource) {
+            return facade.updateResource(id, updatedResource);
         }
 
 

@@ -6,6 +6,7 @@ public class LinkReference extends ResourceReference {
 
     public LinkReference() {
     }
+
     public LinkReference(String url) {
         this.url = url;
     }
@@ -21,5 +22,10 @@ public class LinkReference extends ResourceReference {
     @Override
     public String getReferenceType() {
         return "LINK";
+    }
+
+    @Override
+    public String toString() {
+        return url;
     }
 }

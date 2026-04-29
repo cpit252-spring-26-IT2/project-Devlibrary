@@ -43,4 +43,9 @@ public class FileReference extends ResourceReference {
     public String getReferenceType() {
         return "FILE";
     }
+
+    @Override
+    public String toString() {
+        return fileName + " | " + fileType + " | " + filePath;
+    }
 }
