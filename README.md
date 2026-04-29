@@ -2,19 +2,28 @@
 
 ## Description
 
-DevLibrary will help the university students to find the subjects sources in one organize place and it also helps Internship students by Provide Resources that help students find internship
-opportunities and learn how to prepare their CV. and it will Provide a Tool Guide that explains useful tools such as Git and GitHub , and it will Provide a Programming Error Helper let the students enter a programming
-error and see an explan of it.
+DevLibrary will help the university students to find the subjects sources in one organize place
+and it will Provide an easy usage for adding, deleting, updating and seeing the resources.
 
-## Features
-- Add and organize resources such as slides, books
+## Core Features
 
-- Browse organized resources by course and type
+- **Resource CRUD Operations:** Users can add, view, update, and delete educational resources.
+- **Multiple Resource Types:** The system supports books, slides, notes, and projects.
+- **Optional Fields:** Each resource type can include optional attributes such as author, week number, note type, project language, and project type.
+- **Link and File References:** Resources can be represented as either external links or file references.
+- **Database Integration:** Resources are stored in a cloud database using Spring Data JPA.
+- **Authenticated Upload Tracking:** The `uploadedBy` field is automatically taken from the logged-in user.
+- **Facade Layer:** adding and deleting and updating and seeing logic is handled inside `ResourceFacade`, keeping the controller simple and organized.
 
--Programming Error Helper and it will Search error by name and will Show explanation, causes, and fix
+### API Endpoints
 
--Tool Guide  it will Search tool by name and will show Description ,Usage and Example
-
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/resources` | Retrieve all resources |
+| GET | `/api/resources/{id}` | Retrieve a resource by ID |
+| POST | `/api/add` | Add a new resource |
+| PUT | `/api/update/{id}` | Update a resource |
+| DELETE | `/api/delete/{id}` | Delete a resource |
 ## Usage
 
 To build and run the app, use:
