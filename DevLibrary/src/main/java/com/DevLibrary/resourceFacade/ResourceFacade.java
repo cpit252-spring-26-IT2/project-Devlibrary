@@ -2,24 +2,30 @@ package com.DevLibrary.resourceFacade;
 
 import com.DevLibrary.DevLibrary.*;
 import com.DevLibrary.Entity.ResourceEntity;
+import com.DevLibrary.FileStorageService.FileStorageService;
 import com.DevLibrary.exception.ResourceNotFoundException;
 import com.DevLibrary.repository.ResourceRepository;
 import com.DevLibrary.request.ResourceRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 //This class provides a simple interface for resource operations.
 @Service
 public class ResourceFacade {
     private ResourceRepository repository;
     private IdGenerator idGenerator;
+    private final FileStorageService fileStorageService;
 
-    public ResourceFacade(ResourceRepository repository,IdGenerator idGenerator) {
+    public ResourceFacade(ResourceRepository repository, IdGenerator idGenerator, FileStorageService fileStorageService) {
         this.repository = repository;
         this.idGenerator = idGenerator;
+        this.fileStorageService = fileStorageService;
     }
+    //get all resources
     public List<ResourceEntity> getResources() {
         return repository.findAll();
     }
@@ -147,5 +153,17 @@ public class ResourceFacade {
         }
 
         return repository.save(updateresource);
+    }
+    // Uploads a file
+    public ResourceEntity uploadFile(MultipartFile file, ResourceRequest request, String username) throws IOException {
+        return fileStorageService.uploadFile(file, request, username);
+    }
+    // Downloads a file by its resource ID.
+    public byte[] downloadFile(String id) throws IOException {
+        return fileStorageService.downloadFile(id);
+    }
+    // Gets the original file name using the resource ID and its use to return the original name for the file you download.
+    public String getFileName(String id) {
+        return fileStorageService.getFileName(id);
     }
 }

@@ -7,12 +7,16 @@ import com.DevLibrary.exception.ResourceNotFoundException;
 import com.DevLibrary.repository.ResourceRepository;
 import com.DevLibrary.request.ResourceRequest;
 import com.DevLibrary.resourceFacade.ResourceFacade;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -47,10 +51,30 @@ public class ResourceController {
         public ResourceEntity updateResource(@PathVariable String id, @RequestBody ResourceRequest updatedResource) {
             return facade.updateResource(id, updatedResource);
         }
+         @PostMapping("/upload")
+        public ResourceEntity uploadResourceFile(@RequestParam("file") MultipartFile file, @ModelAttribute ResourceRequest request) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        return facade.uploadFile(file, request, username);
+         }
+
+         @GetMapping("/download/{id}")
+        public ResponseEntity<byte[]> downloadResourceFile(@PathVariable("id") String id) throws IOException {
+        byte[] fileData = facade.downloadFile(id);
+        String fileName = facade.getFileName(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(fileData);
+        }
+
+}
 
 
 
-    }
+
 
 
 
