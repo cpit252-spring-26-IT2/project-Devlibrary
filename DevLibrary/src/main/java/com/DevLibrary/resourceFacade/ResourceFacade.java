@@ -3,6 +3,7 @@ package com.DevLibrary.resourceFacade;
 import com.DevLibrary.DevLibrary.*;
 import com.DevLibrary.Entity.ResourceEntity;
 import com.DevLibrary.FileStorageService.FileStorageService;
+import com.DevLibrary.Logger.ActivityLogger;
 import com.DevLibrary.exception.ResourceNotFoundException;
 import com.DevLibrary.repository.ResourceRepository;
 import com.DevLibrary.request.ResourceRequest;
@@ -83,9 +84,18 @@ public class ResourceFacade {
     //delete
     public void deleteResource(String id) {
         //search by id using jpa commands findById() and then delete() if the resource doesn`t exist throw Exception
+        // We use the logger here because this method modifies the data.
         ResourceEntity resource = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
         repository.delete(resource);
+
+        //put the event log message
+        String logMessage = "A resource was DELETED - ID: " + id + ", Title: " + resource.getTitle();
+
+        //Create and start the background Thread for logging
+        ActivityLogger activityLogger=new ActivityLogger(logMessage);
+        Thread thread = new Thread(activityLogger);
+        thread.start();
     }
     //get
     public ResourceEntity getResource(String id) {
@@ -156,7 +166,18 @@ public class ResourceFacade {
     }
     // Uploads a file
     public ResourceEntity uploadFile(MultipartFile file, ResourceRequest request, String username) throws IOException {
-        return fileStorageService.uploadFile(file, request, username);
+        // We use the logger here because this method modifies the data.
+        ResourceEntity savedEntity = fileStorageService.uploadFile(file, request, username);
+
+        //put the event log message
+        String logMessage = "User (" + username + ") uploaded a new resource titled: " + request.getTitle();
+
+        //Create and start the background Thread for logging
+        ActivityLogger activityLogger=new ActivityLogger(logMessage);
+        Thread thread = new Thread(activityLogger);
+        thread.start();
+
+        return savedEntity;
     }
     // Downloads a file by its resource ID.
     public byte[] downloadFile(String id) throws IOException {
