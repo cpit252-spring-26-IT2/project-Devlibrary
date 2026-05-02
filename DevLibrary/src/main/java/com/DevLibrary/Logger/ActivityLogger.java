@@ -23,14 +23,17 @@ public class ActivityLogger implements Runnable {
         String Message = "[" + timeStamp + "] EVENT: " + logMessage;
 
         //Using IO Streams to write to the file
-        try
-                (FileWriter fw = new FileWriter(filePath, true);
-                 // BufferedWriter uses a memory buffer before writing text to the file.
-             BufferedWriter writer = new BufferedWriter(fw)) {
-
+        try{
+            // BufferedWriter uses a memory buffer before writing text to the file.
+            FileWriter fw = new FileWriter(filePath, true);
+            BufferedWriter writer = new BufferedWriter(fw);
             // Write the message into the buffer
             writer.write(Message);
             writer.newLine();
+
+            // Force any text stored in the buffer to be written to the file
+            writer.flush();
+            writer.close();
 
         }catch (IOException e) {
             System.out.println("Thread-Log Error writing to file: " + e.getMessage());
