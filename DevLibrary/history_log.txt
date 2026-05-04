@@ -1,0 +1,6 @@
+[2026-04-30 23:04:21] EVENT: User (hossam) uploaded a new resource titled: creational design pattren
+[2026-04-30 23:05:03] EVENT: User (hossam) uploaded a new resource titled: inro about design pattrens
+[2026-04-30 23:05:33] EVENT: A resource was DELETED - ID: S-1002, Title: inro about design pattrens
+[2026-05-03 00:38:36] EVENT: User (hossam) uploaded a new resource titled: inro about Exciption
+[2026-05-03 00:40:56] EVENT: A resource was DELETED - ID: S-1001, Title: creational design pattren
+[2026-05-03 00:42:11] EVENT: User (hossam) uploaded a new resource titled: inro about Exciption

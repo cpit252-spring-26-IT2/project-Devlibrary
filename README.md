@@ -31,7 +31,6 @@ To build and run the app, use:
 POSTMAN with the above API endpoints
 
 
-
 ## License
 
 MIT
