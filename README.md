@@ -28,10 +28,8 @@ and it will Provide an easy usage for adding, deleting, updating and seeing the 
 
 To build and run the app, use:
 
-```shell
-```
+POSTMAN with the above API endpoints
 
-## Screenshots
 
 
 ## License
