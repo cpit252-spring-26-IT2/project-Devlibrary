@@ -1,168 +1,35 @@
+let resources = [];
+
+// TODO: Replace this placeholder with the authenticated username from the backend
+// when an endpoint for the current user is available. The backend currently sets
+// uploadedBy from Spring Security, so My Uploads should eventually use that same
+// authenticated username instead of this frontend placeholder.
 const currentUser = "Student";
 
-// Frontend files are served from src/main/resources/static.
-// Later, replace the dummy array below with backend API calls using relative URLs.
-// Use fetch("/api/resources"), not full localhost URLs.
-// The frontend must only communicate with backend APIs and must never connect directly to the database.
-//
-// Future API connection points:
-// GET /api/resources
-// GET /api/resources/{id}
-// POST /api/add
-// PUT /api/update/{id}
-// DELETE /api/delete/{id}
-// POST /api/upload
-// GET /api/download/{id}
-let resources = [
-    {
-        id: "B-1001",
-        resourceType: "book",
-        title: "Introduction to Java",
-        courseName: "CPIT252",
-        description: "A useful Java book for OOP concepts.",
-        referenceType: "link",
-        url: "https://example.com/java-book",
-        fileName: "",
-        uploadedBy: "Ahmed",
-        author: "John Smith",
-        weekNumber: "",
-        noteType: "",
-        projectLanguage: "",
-        projectType: ""
-    },
-    {
-        id: "B-1002",
-        resourceType: "book",
-        title: "Database Systems Essentials",
-        courseName: "CPIT240",
-        description: "Clear chapters about ER diagrams, SQL, and normalization.",
-        referenceType: "file",
-        url: "",
-        fileName: "database-systems-essentials.pdf",
-        uploadedBy: "Student",
-        author: "Linda Brown",
-        weekNumber: "",
-        noteType: "",
-        projectLanguage: "",
-        projectType: ""
-    },
-    {
-        id: "S-1003",
-        resourceType: "slides",
-        title: "Facade Pattern Slides",
-        courseName: "CPIT252",
-        description: "Lecture slides explaining the facade design pattern with examples.",
-        referenceType: "file",
-        url: "",
-        fileName: "facade-pattern-week6.pdf",
-        uploadedBy: "Sara",
-        author: "",
-        weekNumber: "6",
-        noteType: "",
-        projectLanguage: "",
-        projectType: ""
-    },
-    {
-        id: "S-1004",
-        resourceType: "slides",
-        title: "Web Security Overview",
-        courseName: "CPIT405",
-        description: "Slides covering authentication, authorization, and common web risks.",
-        referenceType: "link",
-        url: "https://example.com/security-slides",
-        fileName: "",
-        uploadedBy: "Student",
-        author: "",
-        weekNumber: "9",
-        noteType: "",
-        projectLanguage: "",
-        projectType: ""
-    },
-    {
-        id: "N-1005",
-        resourceType: "notes",
-        title: "Spring Boot Exam Notes",
-        courseName: "CPIT252",
-        description: "Concise notes for controllers, services, repositories, and dependency injection.",
-        referenceType: "file",
-        url: "",
-        fileName: "spring-boot-exam-notes.docx",
-        uploadedBy: "Hossam",
-        author: "",
-        weekNumber: "",
-        noteType: "Exam Review",
-        projectLanguage: "",
-        projectType: ""
-    },
-    {
-        id: "N-1006",
-        resourceType: "notes",
-        title: "Algorithms Cheat Sheet",
-        courseName: "CPIT305",
-        description: "Big O, sorting algorithms, graphs, and dynamic programming summary.",
-        referenceType: "link",
-        url: "https://example.com/algorithms-notes",
-        fileName: "",
-        uploadedBy: "Student",
-        author: "",
-        weekNumber: "",
-        noteType: "Cheat Sheet",
-        projectLanguage: "",
-        projectType: ""
-    },
-    {
-        id: "P-1007",
-        resourceType: "project",
-        title: "Library Management Project",
-        courseName: "CPIT251",
-        description: "Sample project structure for a course library management system.",
-        referenceType: "file",
-        url: "",
-        fileName: "library-management-project.zip",
-        uploadedBy: "Ahmed",
-        author: "",
-        weekNumber: "",
-        noteType: "",
-        projectLanguage: "Java",
-        projectType: "Desktop App"
-    },
-    {
-        id: "P-1008",
-        resourceType: "project",
-        title: "Student Portal Demo",
-        courseName: "CPIT405",
-        description: "Simple web project demo with pages for students and admins.",
-        referenceType: "link",
-        url: "https://example.com/student-portal-demo",
-        fileName: "",
-        uploadedBy: "Student",
-        author: "",
-        weekNumber: "",
-        noteType: "",
-        projectLanguage: "JavaScript",
-        projectType: "Web App"
-    }
-];
+const API = {
+    resources: "/api/resources",
+    resource: (id) => `/api/resources/${encodeURIComponent(id)}`,
+    add: "/api/add",
+    update: (id) => `/api/update/${encodeURIComponent(id)}`,
+    delete: (id) => `/api/delete/${encodeURIComponent(id)}`,
+    upload: "/api/upload",
+    download: (id) => `/api/download/${encodeURIComponent(id)}`
+};
 
 let selectedResourceId = null;
 let editingResourceId = null;
 let lastBrowseResourceIds = [];
 
 const pageIds = ["homePage", "browsePage", "formPage", "detailsPage", "uploadsPage"];
-const typeLabels = {
-    book: "Books",
-    slides: "Slides",
-    notes: "Notes",
-    project: "Projects"
-};
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     setupNavigation();
     setupFilters();
     setupForm();
     setupCardActions();
     renderAll();
     showPage("homePage");
+    await loadResources();
 });
 
 function setupNavigation() {
@@ -207,7 +74,7 @@ function setupForm() {
 
 function setupCardActions() {
     ["browseResources", "recentResources", "myUploads", "resourceDetails"].forEach((containerId) => {
-        document.getElementById(containerId).addEventListener("click", (event) => {
+        document.getElementById(containerId).addEventListener("click", async (event) => {
             const button = event.target.closest("[data-action]");
             if (!button) {
                 return;
@@ -217,20 +84,84 @@ function setupCardActions() {
             const action = button.dataset.action;
 
             if (action === "view") {
-                openDetails(resourceId);
+                await openDetails(resourceId);
             } else if (action === "edit") {
                 openEditForm(resourceId);
             } else if (action === "delete") {
-                deleteResource(resourceId);
+                await deleteResource(resourceId);
             } else if (action === "open") {
                 openResourceLink(resourceId);
             } else if (action === "download") {
-                downloadResource(resourceId);
+                await downloadResource(resourceId);
             } else if (action === "back") {
                 showPage("browsePage");
             }
         });
     });
+}
+
+async function loadResources() {
+    try {
+        const data = await requestJson(API.resources, {
+            method: "GET",
+            errorMessage: "Failed to load resources"
+        });
+        resources = Array.isArray(data) ? data.map(normalizeResourceFromApi) : [];
+        renderAll();
+        if (document.getElementById("detailsPage").classList.contains("active-page")) {
+            renderDetails();
+        }
+    } catch (error) {
+        console.error("Failed to load resources", error);
+        showMessage("Failed to load resources.", "error");
+    }
+}
+
+async function requestJson(url, options = {}) {
+    const { errorMessage = "Request failed", ...fetchOptions } = options;
+    const response = await fetch(url, {
+        credentials: "same-origin",
+        ...fetchOptions,
+        headers: {
+            Accept: "application/json",
+            ...(fetchOptions.headers || {})
+        }
+    });
+
+    if (!response.ok) {
+        const responseText = await readResponseText(response);
+        throw new Error(`${errorMessage}. Status ${response.status}. ${responseText}`);
+    }
+
+    if (response.status === 204) {
+        return null;
+    }
+
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
+}
+
+async function requestWithoutJson(url, options = {}) {
+    const { errorMessage = "Request failed", ...fetchOptions } = options;
+    const response = await fetch(url, {
+        credentials: "same-origin",
+        ...fetchOptions
+    });
+
+    if (!response.ok) {
+        const responseText = await readResponseText(response);
+        throw new Error(`${errorMessage}. Status ${response.status}. ${responseText}`);
+    }
+
+    return response;
+}
+
+async function readResponseText(response) {
+    try {
+        return await response.text();
+    } catch (error) {
+        return "";
+    }
 }
 
 function showPage(pageId) {
@@ -269,20 +200,12 @@ function renderHome() {
 }
 
 function renderDashboard() {
-    const counts = {
-        total: resources.length,
-        book: countByType("book"),
-        slides: countByType("slides"),
-        notes: countByType("notes"),
-        project: countByType("project")
-    };
-
     const cards = [
-        { label: "Total Resources", value: counts.total },
-        { label: "Books", value: counts.book },
-        { label: "Slides", value: counts.slides },
-        { label: "Notes", value: counts.notes },
-        { label: "Projects", value: counts.project }
+        { label: "Total Resources", value: resources.length },
+        { label: "Books", value: countByType("book") },
+        { label: "Slides", value: countByType("slides") },
+        { label: "Notes", value: countByType("notes") },
+        { label: "Projects", value: countByType("project") }
     ];
 
     document.getElementById("dashboardCards").innerHTML = cards.map((card) => `
@@ -295,15 +218,15 @@ function renderDashboard() {
 
 function renderRecentResources() {
     const recent = resources.slice(-4).reverse();
-    document.getElementById("recentResources").innerHTML = recent
-        .map((resource) => createResourceCard(resource, { compact: true }))
-        .join("");
+    document.getElementById("recentResources").innerHTML = recent.length
+        ? recent.map((resource) => createResourceCard(resource, { compact: true })).join("")
+        : `<p class="empty-state visible">No resources have been added yet.</p>`;
 }
 
 function renderBrowseResources() {
-    const searchValue = document.getElementById("searchInput").value.trim().toLowerCase();
-    const typeValue = document.getElementById("typeFilter").value;
-    const referenceValue = document.getElementById("referenceFilter").value;
+    const searchValue = getValue("searchInput").toLowerCase();
+    const typeValue = getValue("typeFilter");
+    const referenceValue = getValue("referenceFilter");
 
     const filteredResources = resources.filter((resource) => {
         const matchesSearch = !searchValue
@@ -402,8 +325,8 @@ function openEditForm(resourceId) {
     setValue("projectLanguage", resource.projectLanguage);
     setValue("projectType", resource.projectType);
     document.getElementById("fileInput").value = "";
-    document.getElementById("fileStatus").textContent = resource.fileName
-        ? `Current file: ${resource.fileName}`
+    document.getElementById("fileStatus").textContent = resource.referenceType === "file" && resource.fileName
+        ? `Current file: ${resource.fileName}. File replacement is not available through the update endpoint yet.`
         : "";
 
     updateDynamicFields();
@@ -411,96 +334,220 @@ function openEditForm(resourceId) {
     showPage("formPage");
 }
 
-function saveResource(event) {
+async function saveResource(event) {
     event.preventDefault();
 
     const referenceType = getValue("referenceType");
     const existingResource = editingResourceId ? findResource(editingResourceId) : null;
-    const fileInput = document.getElementById("fileInput");
-    const selectedFileName = fileInput.files.length > 0 ? fileInput.files[0].name : "";
-    const fileName = referenceType === "file"
-        ? selectedFileName || (existingResource ? existingResource.fileName : "")
-        : "";
-    const url = referenceType === "link" ? getValue("url") : "";
 
-    if (referenceType === "link" && !url) {
+    if (editingResourceId) {
+        await updateResource(existingResource, referenceType);
+    } else if (referenceType === "file") {
+        await uploadResource();
+    } else {
+        await addLinkResource();
+    }
+}
+
+async function addLinkResource() {
+    const payload = buildJsonPayload({ includeUrl: true });
+
+    if (!payload.url) {
         showMessage("Please enter a URL for link resources.", "error");
         return;
     }
 
-    if (referenceType === "file" && !fileName) {
-        showMessage("Please choose a file for file resources.", "error");
-        return;
-    }
+    try {
+        await requestJson(API.add, {
+            method: "POST",
+            errorMessage: "Failed to add resource",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
 
-    const resourceData = normalizeResource({
-        id: editingResourceId || createResourceId(getValue("resourceType")),
-        resourceType: getValue("resourceType"),
-        title: getValue("title"),
-        courseName: getValue("courseName"),
-        description: getValue("description"),
-        uploadedBy: existingResource ? existingResource.uploadedBy : currentUser,
-        referenceType,
-        url,
-        fileName,
-        author: getValue("author"),
-        weekNumber: getValue("weekNumber"),
-        noteType: getValue("noteType"),
-        projectLanguage: getValue("projectLanguage"),
-        projectType: getValue("projectType")
-    });
-
-    if (editingResourceId) {
-        const index = resources.findIndex((resource) => resource.id === editingResourceId);
-        resources[index] = resourceData;
-        selectedResourceId = resourceData.id;
-        editingResourceId = null;
         clearResourceForm();
-        renderAll();
-        showMessage("Resource updated successfully.", "success");
-        showPage("browsePage");
-    } else {
-        resources.push(resourceData);
-        clearResourceForm();
-        renderAll();
         showMessage("Resource added successfully.", "success");
+        await loadResources();
         showPage("browsePage");
+    } catch (error) {
+        console.error("Failed to add resource", error);
+        showMessage("Failed to add resource.", "error");
     }
 }
 
-function deleteResource(resourceId) {
+async function uploadResource() {
+    const fileInput = document.getElementById("fileInput");
+    if (!fileInput.files.length) {
+        showMessage("Please choose a file to upload.", "error");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+    appendFormDataValue(formData, "resourceType", getValue("resourceType"));
+    appendFormDataValue(formData, "title", getValue("title"));
+    appendFormDataValue(formData, "courseName", getValue("courseName"));
+    appendFormDataValue(formData, "description", getValue("description"));
+    appendFormDataValue(formData, "author", getValue("author"));
+    appendFormDataValue(formData, "weekNumber", getValue("weekNumber"));
+    appendFormDataValue(formData, "noteType", getValue("noteType"));
+    appendFormDataValue(formData, "projectLanguage", getValue("projectLanguage"));
+    appendFormDataValue(formData, "projectType", getValue("projectType"));
+
+    try {
+        await requestWithoutJson(API.upload, {
+            method: "POST",
+            errorMessage: "Failed to upload file",
+            body: formData
+        });
+
+        clearResourceForm();
+        showMessage("File resource uploaded successfully.", "success");
+        await loadResources();
+        showPage("browsePage");
+    } catch (error) {
+        console.error("Failed to upload file", error);
+        showMessage("Failed to upload file.", "error");
+    }
+}
+
+async function updateResource(existingResource, referenceType) {
+    if (!existingResource) {
+        showMessage("Resource was not found.", "error");
+        return;
+    }
+
+    const fileInput = document.getElementById("fileInput");
+    if (referenceType === "file" && existingResource.referenceType !== "file") {
+        showMessage("Changing a link resource to a file requires adding a new file resource.", "error");
+        return;
+    }
+    if (referenceType === "file" && fileInput.files.length > 0) {
+        showMessage("Replacing files while editing is not supported by the current update endpoint.", "error");
+        return;
+    }
+
+    const payload = buildJsonPayload({ includeUrl: referenceType === "link" });
+
+    if (referenceType === "link" && !payload.url) {
+        showMessage("Please enter a URL for link resources.", "error");
+        return;
+    }
+
+    try {
+        await requestJson(API.update(existingResource.id), {
+            method: "PUT",
+            errorMessage: "Failed to update resource",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        selectedResourceId = existingResource.id;
+        editingResourceId = null;
+        clearResourceForm();
+        showMessage("Resource updated successfully.", "success");
+        await loadResources();
+        showPage("browsePage");
+    } catch (error) {
+        console.error("Failed to update resource", error);
+        showMessage("Failed to update resource.", "error");
+    }
+}
+
+function buildJsonPayload(options = {}) {
+    const payload = {
+        resourceType: getValue("resourceType"),
+        title: getValue("title"),
+        courseName: getValue("courseName"),
+        description: getValue("description")
+    };
+
+    if (options.includeUrl) {
+        payload.url = getValue("url");
+    }
+
+    const resourceType = payload.resourceType;
+    if (resourceType === "book") {
+        addIfPresent(payload, "author", getValue("author"));
+    } else if (resourceType === "slides") {
+        const weekNumber = getValue("weekNumber");
+        if (weekNumber) {
+            payload.weekNumber = Number(weekNumber);
+        }
+    } else if (resourceType === "notes") {
+        addIfPresent(payload, "noteType", getValue("noteType"));
+    } else if (resourceType === "project") {
+        addIfPresent(payload, "projectLanguage", getValue("projectLanguage"));
+        addIfPresent(payload, "projectType", getValue("projectType"));
+    }
+
+    return payload;
+}
+
+async function deleteResource(resourceId) {
     const resource = findResource(resourceId);
     if (!resource) {
         showMessage("Resource was not found.", "error");
         return;
     }
 
-    const confirmed = window.confirm(`Delete "${resource.title}"?`);
+    const confirmed = window.confirm("Are you sure you want to delete this resource?");
     if (!confirmed) {
         return;
     }
 
-    resources = resources.filter((item) => item.id !== resourceId);
-    if (selectedResourceId === resourceId) {
-        selectedResourceId = null;
-    }
-    renderAll();
-    showMessage("Resource deleted.", "success");
+    try {
+        await requestWithoutJson(API.delete(resourceId), {
+            method: "DELETE",
+            errorMessage: "Failed to delete resource"
+        });
 
-    if (document.getElementById("detailsPage").classList.contains("active-page")) {
-        showPage("browsePage");
+        if (selectedResourceId === resourceId) {
+            selectedResourceId = null;
+        }
+
+        showMessage("Resource deleted.", "success");
+        await loadResources();
+
+        if (document.getElementById("detailsPage").classList.contains("active-page")) {
+            showPage("browsePage");
+        }
+    } catch (error) {
+        console.error("Failed to delete resource", error);
+        showMessage("Failed to delete resource.", "error");
     }
 }
 
-function openDetails(resourceId) {
+async function openDetails(resourceId) {
     selectedResourceId = resourceId;
+    let resource = findResource(resourceId);
+
+    if (!resource) {
+        try {
+            const data = await requestJson(API.resource(resourceId), {
+                method: "GET",
+                errorMessage: "Failed to load resource details"
+            });
+            resource = normalizeResourceFromApi(data);
+            upsertResource(resource);
+        } catch (error) {
+            console.error("Failed to load resource details", error);
+            showMessage("Failed to load resource details.", "error");
+            return;
+        }
+    }
+
     renderDetails();
     showPage("detailsPage");
 }
 
 function renderDetails() {
     const detailsContainer = document.getElementById("resourceDetails");
-    const resource = findResource(selectedResourceId) || resources.find((item) => lastBrowseResourceIds.includes(item.id)) || resources[0];
+    const resource = findResource(selectedResourceId);
 
     if (!resource) {
         detailsContainer.innerHTML = `
@@ -513,11 +560,10 @@ function renderDetails() {
         return;
     }
 
-    selectedResourceId = resource.id;
     const optionalMeta = getOptionalMeta(resource);
     const referenceInfo = resource.referenceType === "link"
         ? `<p><strong>URL:</strong> <a class="preview-url" href="${escapeAttribute(resource.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(resource.url)}</a></p>`
-        : `<p><strong>File Name:</strong> ${escapeHtml(resource.fileName)}</p>`;
+        : `<p><strong>File Name:</strong> ${escapeHtml(resource.fileName || "File resource")}</p>`;
     const previewBox = resource.referenceType === "link"
         ? `
             <div class="preview-box">
@@ -529,7 +575,7 @@ function renderDetails() {
         : `
             <div class="preview-box">
                 <h3>File Preview</h3>
-                <p><strong>${escapeHtml(resource.fileName)}</strong></p>
+                <p><strong>${escapeHtml(resource.fileName || "File resource")}</strong></p>
                 <p class="muted">File preview will be connected later.</p>
                 <button class="btn btn-primary" type="button" data-action="download" data-id="${escapeAttribute(resource.id)}">Download</button>
             </div>
@@ -577,9 +623,12 @@ function updateDynamicFields() {
 
 function updateReferenceFields() {
     const referenceType = getValue("referenceType");
+    const editingResource = editingResourceId ? findResource(editingResourceId) : null;
+    const editingFile = editingResource?.referenceType === "file" && referenceType === "file";
     document.getElementById("linkFields").classList.toggle("hidden", referenceType !== "link");
     document.getElementById("fileFields").classList.toggle("hidden", referenceType !== "file");
     document.getElementById("url").required = referenceType === "link";
+    document.getElementById("fileInput").required = referenceType === "file" && !editingFile;
 }
 
 function clearResourceForm() {
@@ -591,36 +640,60 @@ function clearResourceForm() {
     updateReferenceFields();
 }
 
-function normalizeResource(resource) {
-    const normalized = {
-        id: resource.id,
-        resourceType: resource.resourceType,
-        title: resource.title,
-        courseName: resource.courseName,
-        description: resource.description,
-        uploadedBy: resource.uploadedBy,
-        referenceType: resource.referenceType,
-        url: resource.url,
-        fileName: resource.fileName,
-        author: "",
-        weekNumber: "",
-        noteType: "",
-        projectLanguage: "",
-        projectType: ""
+function normalizeResourceFromApi(resource) {
+    const reference = stringValue(resource?.reference);
+    const resourceType = normalizeResourceType(resource?.resourceType);
+    const referenceType = detectReferenceType(resource, reference);
+    const url = referenceType === "link" ? stringValue(resource?.url || reference) : "";
+    const fileName = referenceType === "file"
+        ? stringValue(resource?.fileName || extractFileName(reference))
+        : "";
+
+    return {
+        id: stringValue(resource?.id),
+        resourceType,
+        title: stringValue(resource?.title),
+        courseName: stringValue(resource?.courseName),
+        description: stringValue(resource?.description),
+        uploadedBy: stringValue(resource?.uploadedBy),
+        reference,
+        referenceType,
+        url,
+        fileName,
+        author: stringValue(resource?.author),
+        weekNumber: resource?.weekNumber ?? "",
+        noteType: stringValue(resource?.noteType),
+        projectLanguage: stringValue(resource?.projectLanguage),
+        projectType: stringValue(resource?.projectType)
     };
+}
 
-    if (resource.resourceType === "book") {
-        normalized.author = resource.author;
-    } else if (resource.resourceType === "slides") {
-        normalized.weekNumber = resource.weekNumber;
-    } else if (resource.resourceType === "notes") {
-        normalized.noteType = resource.noteType;
-    } else if (resource.resourceType === "project") {
-        normalized.projectLanguage = resource.projectLanguage;
-        normalized.projectType = resource.projectType;
+function detectReferenceType(resource, reference) {
+    const explicitType = stringValue(resource?.referenceType).toLowerCase();
+    if (explicitType === "link" || explicitType === "file") {
+        return explicitType;
     }
+    if (resource?.url || /^https?:\/\//i.test(reference)) {
+        return "link";
+    }
+    return "file";
+}
 
-    return normalized;
+function normalizeResourceType(type) {
+    const lowerType = stringValue(type).toLowerCase();
+    if (lowerType === "slide") {
+        return "slides";
+    }
+    if (lowerType === "note") {
+        return "notes";
+    }
+    return lowerType || "book";
+}
+
+function extractFileName(reference) {
+    const cleanReference = stringValue(reference).split("|")[0].trim();
+    const parts = cleanReference.split(/[\\/]/);
+    return parts[parts.length - 1] || cleanReference;
 }
 
 function getOptionalMeta(resource) {
@@ -652,13 +725,37 @@ function openResourceLink(resourceId) {
     window.open(resource.url, "_blank", "noopener,noreferrer");
 }
 
-function downloadResource(resourceId) {
+async function downloadResource(resourceId) {
     const resource = findResource(resourceId);
     if (!resource || resource.referenceType !== "file") {
         showMessage("No file is available for this resource.", "error");
         return;
     }
-    showMessage(`Download will be connected later. Dummy file: ${resource.fileName}`, "success");
+
+    try {
+        const response = await requestWithoutJson(API.download(resourceId), {
+            method: "GET",
+            errorMessage: "Failed to download file"
+        });
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = getDownloadFileName(response, resource);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+        console.error("Failed to download file", error);
+        showMessage("Failed to download file.", "error");
+    }
+}
+
+function getDownloadFileName(response, resource) {
+    const disposition = response.headers.get("Content-Disposition") || "";
+    const match = disposition.match(/filename="?([^"]+)"?/i);
+    return match ? match[1] : resource.fileName || "resource-download";
 }
 
 function showMessage(message, type = "success") {
@@ -669,7 +766,7 @@ function showMessage(message, type = "success") {
     showMessage.timeoutId = window.setTimeout(() => {
         messageBox.className = "app-message";
         messageBox.textContent = "";
-    }, 3200);
+    }, 3800);
 }
 
 function countByType(type) {
@@ -680,14 +777,25 @@ function findResource(resourceId) {
     return resources.find((resource) => resource.id === resourceId);
 }
 
-function createResourceId(resourceType) {
-    const prefix = resourceType.charAt(0).toUpperCase();
-    const nextNumber = resources.length + 1001;
-    let id = `${prefix}-${nextNumber}`;
-    while (findResource(id)) {
-        id = `${prefix}-${Number(id.split("-")[1]) + 1}`;
+function upsertResource(resource) {
+    const index = resources.findIndex((item) => item.id === resource.id);
+    if (index >= 0) {
+        resources[index] = resource;
+    } else {
+        resources.push(resource);
     }
-    return id;
+}
+
+function appendFormDataValue(formData, name, value) {
+    if (value !== "") {
+        formData.append(name, value);
+    }
+}
+
+function addIfPresent(payload, key, value) {
+    if (value !== "") {
+        payload[key] = value;
+    }
 }
 
 function getValue(id) {
@@ -695,7 +803,11 @@ function getValue(id) {
 }
 
 function setValue(id, value) {
-    document.getElementById(id).value = value || "";
+    document.getElementById(id).value = value ?? "";
+}
+
+function stringValue(value) {
+    return value == null ? "" : String(value);
 }
 
 function escapeHtml(value) {

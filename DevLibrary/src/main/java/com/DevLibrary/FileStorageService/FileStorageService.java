@@ -65,6 +65,11 @@ public class FileStorageService {
         entity.setDescription(resource.getDescription());
         entity.setUploadedBy(resource.getUploadedBy());
         entity.setResourceType(request.getResourceType());
+        entity.setAuthor(request.getAuthor());
+        entity.setWeekNumber(request.getWeekNumber());
+        entity.setNoteType(request.getNoteType());
+        entity.setProjectLanguage(request.getProjectLanguage());
+        entity.setProjectType(request.getProjectType());
 
         // If the resource has a file/link reference convert it to a string and save it in the entity reference field.
         if (resource.getReference() != null) {
