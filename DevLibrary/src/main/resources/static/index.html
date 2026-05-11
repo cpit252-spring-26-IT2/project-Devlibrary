@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevLibrary</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar" aria-label="Main navigation">
+            <button class="brand nav-link" type="button" data-page="homePage">DevLibrary</button>
+            <div class="nav-menu">
+                <button class="nav-link active" type="button" data-page="homePage">Home</button>
+                <button class="nav-link" type="button" data-page="browsePage">Browse Resources</button>
+                <button class="nav-link" type="button" data-page="formPage" data-mode="add">Add Resource</button>
+                <button class="nav-link" type="button" data-page="uploadsPage">My Uploads</button>
+            </div>
+            <span class="user-label">Logged in as Student</span>
+        </nav>
+    </header>
+
+    <div id="appMessage" class="app-message" role="status" aria-live="polite"></div>
+
+    <main>
+        <section id="homePage" class="page active-page">
+            <div class="hero">
+                <div class="hero-content">
+                    <p class="eyebrow">Student Resource Library</p>
+                    <h1>DevLibrary</h1>
+                    <p class="subtitle">A simple library for sharing course resources.</p>
+                    <p class="hero-description">
+                        Share useful books, slides, notes, and project references with classmates so everyone can find course materials faster.
+                    </p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" type="button" data-page="browsePage">Browse Resources</button>
+                        <button class="btn btn-secondary" type="button" data-page="formPage" data-mode="add">Add Resource</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-shell">
+                <section class="section-block" aria-labelledby="dashboardTitle">
+                    <div class="section-heading">
+                        <h2 id="dashboardTitle">Library Dashboard</h2>
+                    </div>
+                    <div id="dashboardCards" class="dashboard-grid"></div>
+                </section>
+
+                <section class="section-block" aria-labelledby="recentTitle">
+                    <div class="section-heading">
+                        <h2 id="recentTitle">Recent Resources</h2>
+                        <button class="text-button" type="button" data-page="browsePage">View all</button>
+                    </div>
+                    <div id="recentResources" class="resource-grid compact-grid"></div>
+                </section>
+            </div>
+        </section>
+
+        <section id="browsePage" class="page">
+            <div class="content-shell">
+                <div class="page-title-row">
+                    <div>
+                        <p class="eyebrow">Explore</p>
+                        <h1>Browse Resources</h1>
+                    </div>
+                </div>
+
+                <form class="filter-panel" id="filterForm">
+                    <label>
+                        Search
+                        <input id="searchInput" type="search" placeholder="Search by title or course name">
+                    </label>
+                    <label>
+                        Resource Type
+                        <select id="typeFilter">
+                            <option value="all">All Types</option>
+                            <option value="book">Book</option>
+                            <option value="slides">Slides</option>
+                            <option value="notes">Notes</option>
+                            <option value="project">Project</option>
+                        </select>
+                    </label>
+                    <label>
+                        Reference Type
+                        <select id="referenceFilter">
+                            <option value="all">All References</option>
+                            <option value="link">Link</option>
+                            <option value="file">File</option>
+                        </select>
+                    </label>
+                    <button class="btn btn-light" id="clearFiltersBtn" type="button">Clear filters</button>
+                </form>
+
+                <div id="browseResources" class="resource-grid"></div>
+                <p id="browseEmpty" class="empty-state">No resources match your filters.</p>
+            </div>
+        </section>
+
+        <section id="formPage" class="page">
+            <div class="content-shell narrow-shell">
+                <div class="page-title-row">
+                    <div>
+                        <p class="eyebrow">Resource Form</p>
+                        <h1 id="resourceFormTitle">Add Resource</h1>
+                    </div>
+                </div>
+
+                <form id="resourceForm" class="resource-form">
+                    <div class="form-grid">
+                        <label>
+                            Resource Type
+                            <select id="resourceType" required>
+                                <option value="book">book</option>
+                                <option value="slides">slides</option>
+                                <option value="notes">notes</option>
+                                <option value="project">project</option>
+                            </select>
+                        </label>
+                        <label>
+                            Reference Type
+                            <select id="referenceType" required>
+                                <option value="link">link</option>
+                                <option value="file">file</option>
+                            </select>
+                        </label>
+                        <label>
+                            Title
+                            <input id="title" type="text" required placeholder="Resource title">
+                        </label>
+                        <label>
+                            Course Name
+                            <input id="courseName" type="text" required placeholder="Example: CPIT252">
+                        </label>
+                    </div>
+
+                    <label>
+                        Description
+                        <textarea id="description" rows="4" required placeholder="Describe why this resource is useful"></textarea>
+                    </label>
+
+                    <div id="linkFields">
+                        <label>
+                            URL
+                            <input id="url" type="url" placeholder="https://example.com">
+                        </label>
+                    </div>
+
+                    <div id="fileFields" class="hidden">
+                        <label>
+                            File
+                            <input id="fileInput" type="file">
+                        </label>
+                        <p id="fileStatus" class="help-text"></p>
+                    </div>
+
+                    <div id="bookFields" class="optional-fields">
+                        <label>
+                            Author
+                            <input id="author" type="text" placeholder="Author name">
+                        </label>
+                    </div>
+
+                    <div id="slidesFields" class="optional-fields hidden">
+                        <label>
+                            Week Number
+                            <input id="weekNumber" type="number" min="1" placeholder="Example: 5">
+                        </label>
+                    </div>
+
+                    <div id="notesFields" class="optional-fields hidden">
+                        <label>
+                            Note Type
+                            <input id="noteType" type="text" placeholder="Summary, lab notes, exam review">
+                        </label>
+                    </div>
+
+                    <div id="projectFields" class="optional-fields hidden">
+                        <div class="form-grid">
+                            <label>
+                                Project Language
+                                <input id="projectLanguage" type="text" placeholder="Java, Python, JavaScript">
+                            </label>
+                            <label>
+                                Project Type
+                                <input id="projectType" type="text" placeholder="Web app, console app, mobile app">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="saveResourceBtn" class="btn btn-primary" type="submit">Save Resource</button>
+                        <button id="clearFormBtn" class="btn btn-light" type="button">Clear Form</button>
+                        <button id="cancelFormBtn" class="btn btn-secondary" type="button">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="detailsPage" class="page">
+            <div class="content-shell narrow-shell">
+                <div id="resourceDetails"></div>
+            </div>
+        </section>
+
+        <section id="uploadsPage" class="page">
+            <div class="content-shell">
+                <div class="page-title-row">
+                    <div>
+                        <p class="eyebrow">Personal Library</p>
+                        <h1>My Uploads</h1>
+                        <p class="page-description">Manage the resources you uploaded.</p>
+                    </div>
+                </div>
+                <div id="myUploads" class="resource-grid"></div>
+                <p id="uploadsEmpty" class="empty-state">You have not uploaded any resources yet.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
