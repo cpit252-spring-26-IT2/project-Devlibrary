@@ -1,0 +1,39 @@
+services:
+# MySQL database container for running the project locally with Docker Compose.
+  mysql-db:
+    image: mysql:8.0
+    container_name: devlibrary-mysql
+    environment:
+      MYSQL_DATABASE: devlibrary
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+#Checks if the MySQL database is ready before starting the Spring Boot app.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "devuser", "-pdevpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+#Spring Boot application container built from the Dockerfile.
+  app:
+    build: .
+    container_name: devlibrary-app
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+ # Environment variables used by application.properties to connect to the MySQL container.
+    environment:
+      DB_URL: jdbc:mysql://mysql-db:3306/devlibrary?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DB_USERNAME: devuser
+      DB_PASSWORD: devpass
+      PORT: 8080
+    restart: on-failure
+
+volumes:
+  mysql-data:
