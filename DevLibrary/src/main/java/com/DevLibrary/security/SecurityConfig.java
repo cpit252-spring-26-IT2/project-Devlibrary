@@ -5,10 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -19,25 +19,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /*
-     Temporary in-memory users used only to test the login system.
-
-     These hardcoded users will be replaced later with a database-based
-     authentication system where users can register and log in using their own accounts.
-    */
     @Bean
-    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails user1 = User.withUsername("azzam")
-                .password(passwordEncoder.encode("1234"))
-                .roles("USER")
-                .build();
-
-        UserDetails user2 = User.withUsername("hossam")
-                .password(passwordEncoder.encode("1234"))
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user1, user2);
+    public UserDetailsService userDetailsService(AppUserRepository userRepository) {
+        return username -> userRepository.findByUsername(username)
+                .map(user -> User.withUsername(user.getUsername())
+                        .password(user.getPassword())
+                        .roles(user.getRole())
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     @Bean
@@ -45,15 +34,18 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/error").permitAll()
+                        .requestMatchers("/", "/home", "/error", "/login.html", "/register.html", "/style.css", "/auth.js", "/api/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(form -> form
+                        .loginPage("/login.html")
+                        .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/home", true)
+                        .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/login.html?logout")
                 );
 
         return http.build();

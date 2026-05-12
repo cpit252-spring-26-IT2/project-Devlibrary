@@ -1,37 +1,55 @@
 package com.DevLibrary.DevLibrary;
 
+import com.DevLibrary.repository.ResourceRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component //<-- this mean that the spring can inject it into the other classes like resourceController
 public class IdGenerator {
 
-    private int bookCounter = 1000;
-    private int slideCounter = 1000;
-    private int noteCounter = 1000;
-    private int projectCounter = 1000;
+    private final ResourceRepository repository;
 
-    public String generateId(String type) {
+    public IdGenerator(ResourceRepository repository) {
+        this.repository = repository;
+    }
 
-        if(type.equalsIgnoreCase("book")){
-            bookCounter++;
-            return "B-" + bookCounter;
+    public synchronized String generateId(String type) {
+        String resourceType = type == null ? "" : type;
+        String prefix = "R";
+
+        if(resourceType.equalsIgnoreCase("book")){
+            prefix = "B";
+        } else if(resourceType.equalsIgnoreCase("slide") || resourceType.equalsIgnoreCase("slides")){
+            prefix = "S";
+        } else if(resourceType.equalsIgnoreCase("note") || resourceType.equalsIgnoreCase("notes")){
+            prefix = "N";
+        } else if(resourceType.equalsIgnoreCase("project")|| resourceType.equalsIgnoreCase("projects")){
+            prefix = "P";
         }
 
-        if(type.equalsIgnoreCase("slide") || type.equalsIgnoreCase("slides")){
-            slideCounter++;
-            return "S-" + slideCounter;
+        int nextNumber = getLatestNumber(prefix) + 1;
+        return prefix + "-" + nextNumber;
+    }
+
+    private int getLatestNumber(String prefix) {
+        List<String> ids = repository.findIdsByPrefix(prefix);
+        return ids.stream()
+                .map(id -> getNumberPart(prefix, id))
+                .max(Integer::compareTo)
+                .orElse(1000);
+    }
+
+    private int getNumberPart(String prefix, String id) {
+        String expectedStart = prefix + "-";
+        if (id == null || !id.startsWith(expectedStart)) {
+            return 1000;
         }
 
-        if(type.equalsIgnoreCase("note") || type.equalsIgnoreCase("notes")){
-            noteCounter++;
-            return "N-" + noteCounter;
+        try {
+            return Integer.parseInt(id.substring(expectedStart.length()));
+        } catch (NumberFormatException ex) {
+            return 1000;
         }
-
-        if(type.equalsIgnoreCase("project")|| type.equalsIgnoreCase("projects")){
-            projectCounter++;
-            return "P-" + projectCounter;
-        }
-
-        return "R-0000";
     }
 }

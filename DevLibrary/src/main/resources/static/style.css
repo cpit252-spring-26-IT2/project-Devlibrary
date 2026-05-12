@@ -92,6 +92,48 @@ button {
     font-weight: 700;
 }
 
+.profile-menu {
+    position: relative;
+}
+
+.profile-button {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #ffffff;
+    padding: 8px 12px;
+}
+
+.profile-button:hover,
+.profile-button:focus {
+    color: var(--primary-dark);
+    outline: 3px solid var(--primary-soft);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 150px;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.profile-dropdown a {
+    display: block;
+    border-radius: 6px;
+    padding: 9px 10px;
+    color: var(--danger);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.profile-dropdown a:hover {
+    background: var(--danger-soft);
+}
+
 .page {
     display: none;
 }
@@ -418,6 +460,50 @@ textarea:focus {
     margin: 8px 0 0;
     color: var(--muted);
     font-size: 0.92rem;
+}
+
+.help-text.success {
+    color: var(--success);
+}
+
+.help-text.error {
+    color: var(--danger);
+}
+
+.auth-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: var(--sky-soft);
+}
+
+.auth-shell {
+    width: min(440px, calc(100% - 32px));
+}
+
+.auth-panel {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+}
+
+.auth-form {
+    margin-top: 18px;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+}
+
+.auth-switch {
+    margin: 16px 0 0;
+    color: var(--muted);
+}
+
+.auth-switch a {
+    color: var(--primary);
+    font-weight: 800;
 }
 
 .empty-state {

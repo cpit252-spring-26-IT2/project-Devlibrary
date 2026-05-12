@@ -1,10 +1,6 @@
 let resources = [];
 
-// TODO: Replace this placeholder with the authenticated username from the backend
-// when an endpoint for the current user is available. The backend currently sets
-// uploadedBy from Spring Security, so My Uploads should eventually use that same
-// authenticated username instead of this frontend placeholder.
-const currentUser = "Student";
+let currentUser = "";
 
 const API = {
     resources: "/api/resources",
@@ -13,7 +9,8 @@ const API = {
     update: (id) => `/api/update/${encodeURIComponent(id)}`,
     delete: (id) => `/api/delete/${encodeURIComponent(id)}`,
     upload: "/api/upload",
-    download: (id) => `/api/download/${encodeURIComponent(id)}`
+    download: (id) => `/api/download/${encodeURIComponent(id)}`,
+    currentUser: "/api/current-user"
 };
 
 let selectedResourceId = null;
@@ -27,8 +24,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupFilters();
     setupForm();
     setupCardActions();
+    setupProfileMenu();
     renderAll();
     showPage("homePage");
+    await loadCurrentUser();
     await loadResources();
 });
 
@@ -100,6 +99,33 @@ function setupCardActions() {
     });
 }
 
+function setupProfileMenu() {
+    const profileButton = document.getElementById("profileButton");
+    const profileDropdown = document.getElementById("profileDropdown");
+    if (!profileButton || !profileDropdown) {
+        return;
+    }
+
+    updateProfileName();
+    profileButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isOpen = profileDropdown.classList.toggle("hidden");
+        profileButton.setAttribute("aria-expanded", String(!isOpen));
+    });
+
+    document.addEventListener("click", () => {
+        profileDropdown.classList.add("hidden");
+        profileButton.setAttribute("aria-expanded", "false");
+    });
+}
+
+function updateProfileName() {
+    const profileButton = document.getElementById("profileButton");
+    if (profileButton) {
+        profileButton.textContent = currentUser || "User";
+    }
+}
+
 async function loadResources() {
     try {
         const data = await requestJson(API.resources, {
@@ -114,6 +140,21 @@ async function loadResources() {
     } catch (error) {
         console.error("Failed to load resources", error);
         showMessage("Failed to load resources.", "error");
+    }
+}
+
+async function loadCurrentUser() {
+    try {
+        const data = await requestJson(API.currentUser, {
+            method: "GET",
+            errorMessage: "Failed to load current user"
+        });
+        if (data?.username) {
+            currentUser = data.username;
+            updateProfileName();
+        }
+    } catch (error) {
+        console.error("Failed to load current user", error);
     }
 }
 
@@ -243,7 +284,9 @@ function renderBrowseResources() {
 }
 
 function renderMyUploads() {
-    const myResources = resources.filter((resource) => resource.uploadedBy === currentUser);
+    const myResources = currentUser
+        ? resources.filter((resource) => resource.uploadedBy === currentUser)
+        : [];
     document.getElementById("myUploads").innerHTML = myResources
         .map((resource) => createResourceCard(resource, { limitedActions: true }))
         .join("");
