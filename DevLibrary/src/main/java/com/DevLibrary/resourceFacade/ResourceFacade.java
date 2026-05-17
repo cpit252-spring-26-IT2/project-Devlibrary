@@ -3,7 +3,7 @@ package com.DevLibrary.resourceFacade;
 import com.DevLibrary.DevLibrary.*;
 import com.DevLibrary.Entity.ResourceEntity;
 import com.DevLibrary.FileStorageService.FileStorageService;
-import com.DevLibrary.Logger.ActivityLogger;
+import com.DevLibrary.Observer.ResourceNotifier;
 import com.DevLibrary.exception.ResourceNotFoundException;
 import com.DevLibrary.repository.ResourceRepository;
 import com.DevLibrary.request.ResourceRequest;
@@ -20,11 +20,13 @@ public class ResourceFacade {
     private ResourceRepository repository;
     private IdGenerator idGenerator;
     private final FileStorageService fileStorageService;
+    private final ResourceNotifier resourceNotifier;
 
-    public ResourceFacade(ResourceRepository repository, IdGenerator idGenerator, FileStorageService fileStorageService) {
+    public ResourceFacade(ResourceRepository repository, IdGenerator idGenerator, FileStorageService fileStorageService , ResourceNotifier resourceNotifier) {
         this.repository = repository;
         this.idGenerator = idGenerator;
         this.fileStorageService = fileStorageService;
+        this.resourceNotifier = resourceNotifier;
     }
     //get all resources
     public List<ResourceEntity> getResources() {
@@ -92,10 +94,9 @@ public class ResourceFacade {
         //put the event log message
         String logMessage = "A resource was DELETED - ID: " + id + ", Title: " + resource.getTitle();
 
-        //Create and start the background Thread for logging
-        ActivityLogger activityLogger=new ActivityLogger(logMessage);
-        Thread thread = new Thread(activityLogger);
-        thread.start();
+        // Notify all observers that a new resource has been uploaded.
+        resourceNotifier.notifyObservers(logMessage);
+
     }
     //get
     public ResourceEntity getResource(String id) {
@@ -172,10 +173,8 @@ public class ResourceFacade {
         //put the event log message
         String logMessage = "User (" + username + ") uploaded a new resource titled: " + request.getTitle();
 
-        //Create and start the background Thread for logging
-        ActivityLogger activityLogger=new ActivityLogger(logMessage);
-        Thread thread = new Thread(activityLogger);
-        thread.start();
+        // Notify all observers that a new resource has been uploaded.
+        resourceNotifier.notifyObservers(logMessage);
 
         return savedEntity;
     }

@@ -1,5 +1,5 @@
 services:
-# MySQL database container for running the project locally with Docker Compose.
+  # MySQL database container for running the project locally with Docker Compose.
   mysql-db:
     image: mysql:8.0
     container_name: devlibrary-mysql
@@ -12,13 +12,13 @@ services:
       - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-#Checks if the MySQL database is ready before starting the Spring Boot app.
+    # Checks if the MySQL database is ready before starting the Spring Boot app.
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "devuser", "-pdevpass"]
       interval: 5s
       timeout: 5s
       retries: 10
-#Spring Boot application container built from the Dockerfile.
+  # Spring Boot application container built from the Dockerfile.
   app:
     build: .
     container_name: devlibrary-app
@@ -27,13 +27,17 @@ services:
         condition: service_healthy
     ports:
       - "8080:8080"
- # Environment variables used by application.properties to connect to the MySQL container.
+    # Environment variables used by application.properties to connect to the MySQL container.
     environment:
       DB_URL: jdbc:mysql://mysql-db:3306/devlibrary?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
       DB_USERNAME: devuser
       DB_PASSWORD: devpass
       PORT: 8080
-    restart: on-failure
+    # Connects the history_log.txt file on your computer with the file inside the container.
+    volumes:
+      - ./history_log.txt:/app/history_log.txt
 
+    restart: on-failure
+# Named volume to keep MySQL data even after stopping the containers.
 volumes:
   mysql-data:

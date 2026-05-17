@@ -5,3 +5,5 @@
 [2026-05-03 00:40:56] EVENT: A resource was DELETED - ID: S-1001, Title: creational design pattren
 [2026-05-03 00:42:11] EVENT: User (hossam) uploaded a new resource titled: inro about Exciption
 [2026-05-11 23:14:17] EVENT: User (hossam) uploaded a new resource titled: Chapter 1
+[2026-05-17 03:21:43] EVENT: A resource was DELETED - ID: B-1001, Title: TEST DOCKER
+[2026-05-17 03:21:58] EVENT: A resource was DELETED - ID: N-1001, Title: TEST
